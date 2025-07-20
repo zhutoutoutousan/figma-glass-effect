@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Glass Effects - Vanilla JS Example</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .content {
+            display: flex;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            height: 500px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #glassCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls {
+            width: 300px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .control-group select,
+        .control-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .control-group input[type="range"] {
+            height: 6px;
+            background: #ddd;
+            outline: none;
+            border-radius: 3px;
+        }
+
+        .value-display {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .material-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .material-btn {
+            padding: 8px 12px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .material-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            .controls {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Physics-Based Glass Effects</h1>
+            <p>Real optical physics with WebGL - Move your mouse over the canvas!</p>
+        </div>
+        
+        <div class="content">
+            <div class="canvas-container">
+                <canvas id="glassCanvas"></canvas>
+                <div id="loadingMessage" class="loading">Loading glass effects...</div>
+                <div id="errorMessage" class="error" style="display: none;"></div>
+            </div>
+            
+            <div class="controls">
+                <h3>Glass Properties</h3>
+                
+                <div class="control-group">
+                    <label for="glassShape">Glass Shape:</label>
+                    <select id="glassShape">
+                        <option value="sphere">Sphere</option>
+                        <option value="cylinder">Cylinder</option>
+                        <option value="lens">Convex Lens</option>
+                        <option value="prism">Triangular Prism</option>
+                        <option value="flat">Flat Glass</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="backgroundPattern">Background Pattern:</label>
+                    <select id="backgroundPattern">
+                        <option value="stripes">Black & White Stripes</option>
+                        <option value="grid">Grid Pattern</option>
+                        <option value="circles">Concentric Circles</option>
+                        <option value="texture">Nature Texture</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="refractionIndex">Refraction Index:</label>
+                    <input type="range" id="refractionIndex" min="1.0" max="2.5" step="0.1" value="1.5">
+                    <div class="value-display" id="refractionValue">1.5</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="dispersion">Chromatic Dispersion:</label>
+                    <input type="range" id="dispersion" min="0.0" max="0.1" step="0.01" value="0.03">
+                    <div class="value-display" id="dispersionValue">0.03</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="thickness">Glass Thickness:</label>
+                    <input type="range" id="thickness" min="0.1" max="1.0" step="0.1" value="0.3">
+                    <div class="value-display" id="thicknessValue">0.3</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="glassSize">Glass Size:</label>
+                    <input type="range" id="glassSize" min="0.1" max="0.4" step="0.05" value="0.2">
+                    <div class="value-display" id="glassSizeValue">0.2</div>
+                </div>
+
+                <div class="control-group">
+                    <label>Material Presets:</label>
+                    <div class="material-buttons">
+                        <button class="material-btn" data-material="water">Water</button>
+                        <button class="material-btn" data-material="crownGlass">Crown Glass</button>
+                        <button class="material-btn" data-material="flintGlass">Flint Glass</button>
+                        <button class="material-btn" data-material="diamond">Diamond</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the physics glass effects library -->
+    <script src="../dist/index.umd.js"></script>
+    <script>
+        // Initialize the glass effect
+        let glassEffect = null;
+        
+        function initializeGlass() {
+            const canvas = document.getElementById('glassCanvas');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            const config = {
+                shape: 'sphere',
+                backgroundPattern: 'stripes',
+                mouse: {
+                    enabled: true,
+                    followCursor: true
+                },
+                animation: {
+                    enabled: true,
+                    speed: 1.0,
+                    surfaceRipples: true
+                },
+                onReady: () => {
+                    loadingMessage.style.display = 'none';
+                    errorMessage.style.display = 'none';
+                    console.log('🎉 Glass effects ready!');
+                },
+                onError: (error) => {
+                    loadingMessage.style.display = 'none';
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    console.error('Glass effects error:', error);
+                }
+            };
+
+            try {
+                glassEffect = new PhysicsGlassEffects.PhysicsGlass(canvas, config);
+            } catch (error) {
+                loadingMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = `Error: ${error.message}`;
+                console.error('Failed to initialize glass effects:', error);
+            }
+        }
+
+        function setupControls() {
+            // Glass shape control
+            const shapeSelect = document.getElementById('glassShape');
+            shapeSelect.addEventListener('change', (e) => {
+                if (glassEffect) {
+                    glassEffect.setShape(e.target.value);
+                }
+            });
+
+            // Background pattern control
+            const patternSelect = document.getElementById('backgroundPattern');
+            patternSelect.addEventListener('change', (e) => {
+                if (glassEffect) {
+                    glassEffect.setBackgroundPattern(e.target.value);
+                }
+            });
+
+            // Refraction index control
+            const refractionSlider = document.getElementById('refractionIndex');
+            const refractionValue = document.getElementById('refractionValue');
+            refractionSlider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                refractionValue.textContent = value;
+                if (glassEffect) {
+                    glassEffect.setRefractionIndex(value);
+                }
+            });
+
+            // Dispersion control
+            const dispersionSlider = document.getElementById('dispersion');
+            const dispersionValue = document.getElementById('dispersionValue');
+            dispersionSlider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                dispersionValue.textContent = value;
+                if (glassEffect) {
+                    glassEffect.setDispersion(value);
+                }
+            });
+
+            // Thickness control
+            const thicknessSlider = document.getElementById('thickness');
+            const thicknessValue = document.getElementById('thicknessValue');
+            thicknessSlider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                thicknessValue.textContent = value;
+                if (glassEffect) {
+                    glassEffect.setThickness(value);
+                }
+            });
+
+            // Size control
+            const sizeSlider = document.getElementById('glassSize');
+            const sizeValue = document.getElementById('glassSizeValue');
+            sizeSlider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                sizeValue.textContent = value;
+                if (glassEffect) {
+                    glassEffect.setSize(value);
+                }
+            });
+
+            // Material preset buttons
+            document.querySelectorAll('.material-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const material = e.target.dataset.material;
+                    if (glassEffect && PhysicsGlassEffects.GLASS_MATERIALS[material]) {
+                        glassEffect.setMaterial(material);
+                        
+                        // Update UI to reflect material properties
+                        const mat = PhysicsGlassEffects.GLASS_MATERIALS[material];
+                        refractionSlider.value = mat.refractionIndex;
+                        refractionValue.textContent = mat.refractionIndex;
+                        dispersionSlider.value = mat.dispersion;
+                        dispersionValue.textContent = mat.dispersion;
+                    }
+                });
+            });
+        }
+
+        // Handle window resize
+        function handleResize() {
+            if (glassEffect) {
+                glassEffect.resize();
+            }
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔬 Initializing Physics Glass Effects...');
+            
+            // Check WebGL support
+            if (!PhysicsGlassEffects.isWebGLSupported()) {
+                const errorMessage = document.getElementById('errorMessage');
+                const loadingMessage = document.getElementById('loadingMessage');
+                loadingMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'WebGL is not supported in this browser.';
+                return;
+            }
+
+            initializeGlass();
+            setupControls();
+            
+            window.addEventListener('resize', handleResize);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (glassEffect) {
+                glassEffect.destroy();
+            }
+        });
+    </script>
+</body>
+</html> 
