@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics-Based Glass Effect Button</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Background container for nature image -->
+        <div class="background"></div>
+        
+        <!-- WebGL Canvas for glass effects -->
+        <canvas id="glassCanvas"></canvas>
+        
+        <!-- Glass button -->
+        <div class="glass-button-container">
+            <button class="glass-button" id="glassButton">
+                <span class="button-text">Glass Physics</span>
+                <div class="glass-overlay"></div>
+            </button>
+        </div>
+        
+        <!-- Controls for demonstrating physics parameters -->
+        <div class="controls">
+            <div class="control-group">
+                <label for="glassShape">Glass Shape:</label>
+                <select id="glassShape">
+                    <option value="sphere" selected>Sphere</option>
+                    <option value="cylinder">Cylinder</option>
+                    <option value="lens">Convex Lens</option>
+                    <option value="prism">Triangular Prism</option>
+                    <option value="flat">Flat Glass</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="backgroundPattern">Background Pattern:</label>
+                <select id="backgroundPattern">
+                    <option value="stripes" selected>Black & White Stripes</option>
+                    <option value="grid">Grid Pattern</option>
+                    <option value="circles">Concentric Circles</option>
+                    <option value="nature">Nature Photo</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="refractionIndex">Refraction Index:</label>
+                <input type="range" id="refractionIndex" min="1.0" max="2.5" step="0.1" value="1.5">
+                <span id="refractionValue">1.5</span>
+            </div>
+            <div class="control-group">
+                <label for="dispersion">Chromatic Dispersion:</label>
+                <input type="range" id="dispersion" min="0.0" max="0.1" step="0.01" value="0.03">
+                <span id="dispersionValue">0.03</span>
+            </div>
+            <div class="control-group">
+                <label for="thickness">Glass Thickness:</label>
+                <input type="range" id="thickness" min="0.1" max="1.0" step="0.1" value="0.3">
+                <span id="thicknessValue">0.3</span>
+            </div>
+            <div class="control-group">
+                <label for="glassSize">Glass Size:</label>
+                <input type="range" id="glassSize" min="0.1" max="0.4" step="0.05" value="0.2">
+                <span id="glassSizeValue">0.2</span>
+            </div>
+        </div>
+    </div>
+    
+    <script src="glass-physics.js"></script>
+</body>
+</html> 

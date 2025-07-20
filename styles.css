@@ -1,0 +1,251 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    background: #000;
+}
+
+.container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Nature background */
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+/* WebGL Canvas for glass effects */
+#glassCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+    background: transparent;
+}
+
+/* Glass button container */
+.glass-button-container {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Glass button styling */
+.glass-button {
+    position: relative;
+    padding: 20px 40px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    min-width: 200px;
+    text-align: center;
+}
+
+.glass-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.glass-button:active {
+    transform: translateY(0);
+}
+
+.button-text {
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Glass overlay for additional effects */
+.glass-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Controls panel */
+.controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 4;
+    min-width: 280px;
+}
+
+.control-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+.controls label {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.controls input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.controls input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.controls select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+}
+
+.controls select:focus {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.controls select option {
+    background: #333;
+    color: white;
+}
+
+.controls span {
+    color: #ccc;
+    font-size: 12px;
+    text-align: center;
+    min-width: 40px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .controls {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        padding: 15px;
+    }
+    
+    .glass-button {
+        padding: 15px 30px;
+        font-size: 16px;
+        min-width: 180px;
+    }
+    
+    .control-group {
+        margin-bottom: 12px;
+    }
+}
+
+/* Subtle animation for glass effect */
+@keyframes glassShimmer {
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+.glass-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    background-size: 200% 100%;
+    animation: glassShimmer 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+} 
