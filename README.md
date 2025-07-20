@@ -2,6 +2,8 @@
 
 A sophisticated WebGL implementation of realistic glass effects using genuine optical physics principles, featuring 3D ray tracing, multiple glass geometries, and dramatic geometric distortions that accurately simulate real glass objects.
 
+npm link: https://www.npmjs.com/package/physics-glass-effects
+
 ## Features
 
 ### 🔬 Advanced Optical Physics
